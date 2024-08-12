@@ -12,10 +12,11 @@ steps:
   - uses: actions/setup-dotnet@v4
     with:
       dotnet-version: '8.0.x'
-  - uses: tsubakimoto/action-dotnet-format@v0
+  - uses: tsubakimoto/action-dotnet-format@v1
     with:
-      base-branch: ${{ github.head_ref }}
+      base-branch: ${{ github.ref_name }}
       project-path: 'example.csproj'
+      verbosity: 'diag'
       github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
