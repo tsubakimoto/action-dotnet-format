@@ -1,0 +1,78 @@
+name: dotnet-format on Pull Request
+description: Run dotnet-format on Pull Request
+inputs:
+  base-branch:
+    description: 'Base branch to compare against'
+    required: true
+    default: main
+  dotnet-version:
+    description: 'Dotnet version to use'
+    required: true
+    default: '8.0'
+  project-path:
+    description: 'Path to the project to format'
+    required: true
+  verbosity:
+    description: 'Verbosity of the output'
+    required: false
+    default: 'normal'
+outputs:
+  head-branch:
+    description: 'Head branch to compare against'
+    value: ${{ steps.commit.outputs.head-branch-name }}
+  changed:
+    description: 'Whether there are any changes'
+    value: ${{ steps.diff.outputs.changed }}
+  pull-request-url:
+    description: 'URL of the pull request'
+    value: ${{ steps.pr.outputs.url }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET SDK
+      id: setup
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+    - name: Format source
+      id: format
+      run: |
+        dotnet format ${{ inputs.project-path }} --verbosity ${{ inputs.verbosity }}
+      shell: bash
+    - name: Check if there are any changes
+      id: diff
+      run: |
+        git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
+      shell: bash
+    - name: Commit changes
+      if: steps.diff.outputs.changed == 'true'
+      id: commit
+      run: |
+        HEAD_BRANCH=dotnet-format-${{ inputs.base-branch }}
+        git checkout -b $HEAD_BRANCH
+        git config user.name github-actions[bot]
+        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+        git add .
+        git commit -m "[bot] Auto formatted"
+        git push --set-upstream origin $HEAD_BRANCH
+        echo "head-branch-name: $HEAD_BRANCH"
+        echo "head-branch-name=$HEAD_BRANCH" >> $GITHUB_OUTPUT
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: bash
+    - name: Create a pull request
+      id: pr
+      run: |
+        BASE_BRANCH=${{ inputs.base-branch }}
+        HEAD_BRANCH=${{ steps.commit.outputs.head-branch-name }}
+        TITLE="Auto format on $BASE_BRANCH"
+        url=$(gh pr create \
+          --base $BASE_BRANCH \
+          --head $HEAD_BRANCH \
+          --title "$TITLE" \
+          --body "$TITLE")
+        echo "Successfully created pull request: $url"
+        echo "url=$url" >> $GITHUB_OUTPUT
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: bash
