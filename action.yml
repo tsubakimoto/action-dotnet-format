@@ -1,14 +1,14 @@
-name: dotnet-format on Pull Request
-description: Run dotnet-format on Pull Request
+name: 'dotnet-format on Pull Request'
+description: 'Run dotnet-format on Pull Request'
+author: 'tsubakimoto'
+branding:
+  icon: 'check-circle'
+  color: 'blue'
 inputs:
   base-branch:
     description: 'Base branch to compare against'
     required: true
-    default: main
-  dotnet-version:
-    description: 'Dotnet version to use'
-    required: true
-    default: '8.0'
+    default: 'main'
   project-path:
     description: 'Path to the project to format'
     required: true
@@ -29,11 +29,6 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Setup .NET SDK
-      id: setup
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ inputs.dotnet-version }}
     - name: Format source
       id: format
       run: |
