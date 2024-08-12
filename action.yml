@@ -16,6 +16,9 @@ inputs:
     description: 'Verbosity of the output'
     required: false
     default: 'normal'
+  github-token:
+    description: 'GitHub token'
+    required: true
 outputs:
   head-branch:
     description: 'Head branch to compare against'
@@ -53,7 +56,7 @@ runs:
         echo "head-branch-name: $HEAD_BRANCH"
         echo "head-branch-name=$HEAD_BRANCH" >> $GITHUB_OUTPUT
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
       shell: bash
     - name: Create a pull request
       id: pr
@@ -69,5 +72,5 @@ runs:
         echo "Successfully created pull request: $url"
         echo "url=$url" >> $GITHUB_OUTPUT
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.github-token }}
       shell: bash
