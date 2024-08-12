@@ -55,9 +55,9 @@ runs:
         git push --set-upstream origin $HEAD_BRANCH
         echo "head-branch-name: $HEAD_BRANCH"
         echo "head-branch-name=$HEAD_BRANCH" >> $GITHUB_OUTPUT
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
-      shell: bash
     - name: Create a pull request
       id: pr
       run: |
@@ -71,6 +71,6 @@ runs:
           --body "$TITLE")
         echo "Successfully created pull request: $url"
         echo "url=$url" >> $GITHUB_OUTPUT
+      shell: bash
       env:
         GH_TOKEN: ${{ inputs.github-token }}
-      shell: bash
