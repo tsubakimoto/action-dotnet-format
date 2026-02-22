@@ -44,7 +44,8 @@ runs:
       shell: bash
     - name: No changes
       if: steps.diff.outputs.changed != 'true'
-      run: echo "No changes detected"
+      run: |
+        echo "No changes detected"
       shell: bash
     - name: Commit changes
       if: steps.diff.outputs.changed == 'true'
