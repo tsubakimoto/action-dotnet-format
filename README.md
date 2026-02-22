@@ -8,8 +8,8 @@ See [action.yml](action.yml)
 **Basic**:
 ```yaml
 steps:
-  - uses: actions/checkout@v4
-  - uses: actions/setup-dotnet@v4
+  - uses: actions/checkout@v6
+  - uses: actions/setup-dotnet@v5
     with:
       dotnet-version: '8.0.x'
   - uses: tsubakimoto/action-dotnet-format@v1
@@ -18,6 +18,7 @@ steps:
       project-path: 'example.csproj'
       verbosity: 'diag'
       github-token: ${{ secrets.GITHUB_TOKEN }}
+      draft: false
 ```
 
 ### Permissions
