@@ -10,10 +10,10 @@ inputs:
     required: true
     default: 'main'
   project-path:
-    description: 'Path to the project to format'
+    description: 'Path to the project or solution to format (e.g., src/MyApp.csproj or MyApp.sln)'
     required: true
   verbosity:
-    description: 'Verbosity of the output'
+    description: 'Verbosity of the output. One of: quiet, minimal, normal, detailed, diagnostic'
     required: false
     default: 'normal'
   github-token:
@@ -42,11 +42,17 @@ runs:
       run: |
         git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
       shell: bash
+    - name: No changes
+      if: steps.diff.outputs.changed != 'true'
+      run: |
+        echo "No changes detected"
+      shell: bash
     - name: Commit changes
       if: steps.diff.outputs.changed == 'true'
       id: commit
       run: |
-        HEAD_BRANCH=dotnet-format-${{ inputs.base-branch }}
+        ACTOR=$(echo "${{ github.actor }}" | sed 's/[^a-zA-Z0-9-]/-/g')
+        HEAD_BRANCH="format/${ACTOR}-$(date +%Y%m%d%H%M%S)"
         git checkout -b $HEAD_BRANCH
         git config user.name github-actions[bot]
         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
@@ -59,6 +65,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
     - name: Create a pull request
+      if: steps.diff.outputs.changed == 'true'
       id: pr
       run: |
         BASE_BRANCH=${{ inputs.base-branch }}
