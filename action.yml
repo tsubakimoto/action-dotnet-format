@@ -10,10 +10,10 @@ inputs:
     required: true
     default: 'main'
   project-path:
-    description: 'Path to the project to format'
+    description: 'Path to the project or solution to format (e.g., src/MyApp.csproj or MyApp.sln)'
     required: true
   verbosity:
-    description: 'Verbosity of the output'
+    description: 'Verbosity of the output. One of: quiet, minimal, normal, detailed, diagnostic'
     required: false
     default: 'normal'
   github-token:
