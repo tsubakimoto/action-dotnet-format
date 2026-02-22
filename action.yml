@@ -51,7 +51,7 @@ runs:
       if: steps.diff.outputs.changed == 'true'
       id: commit
       run: |
-        HEAD_BRANCH=dotnet-format-${{ inputs.base-branch }}
+        HEAD_BRANCH="format/${{ github.actor }}-$(date +%Y%m%d%H%M%S)"
         git checkout -b $HEAD_BRANCH
         git config user.name github-actions[bot]
         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
