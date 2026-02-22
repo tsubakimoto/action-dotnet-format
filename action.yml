@@ -42,6 +42,10 @@ runs:
       run: |
         git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
       shell: bash
+    - name: No changes
+      if: steps.diff.outputs.changed != 'true'
+      run: echo "No changes detected"
+      shell: bash
     - name: Commit changes
       if: steps.diff.outputs.changed == 'true'
       id: commit
@@ -59,6 +63,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
     - name: Create a pull request
+      if: steps.diff.outputs.changed == 'true'
       id: pr
       run: |
         BASE_BRANCH=${{ inputs.base-branch }}
